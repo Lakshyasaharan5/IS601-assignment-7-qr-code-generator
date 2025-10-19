@@ -27,8 +27,8 @@ jobs:
       # Step 4: Run the container (basic test)
       - name: Run container and generate QR code
         run: |
-          docker run --rm -v ${{ github.workspace }}/qr_codes:/app/qr_codes qr-code-generator
-          echo "Container run completed."
+            docker run --rm -u 0 -v ${{ github.workspace }}/qr_codes:/app/qr_codes qr-code-generator
+            echo "Container run completed."
 
       # Step 5: Verify that the QR code was created
       - name: Verify QR code output
