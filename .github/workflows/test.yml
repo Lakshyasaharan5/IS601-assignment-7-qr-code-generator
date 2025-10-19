@@ -1,0 +1,44 @@
+name: Build and Test QR Code Generator
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout your repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Docker Buildx (for better caching and multi-platform builds)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: Build the Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t qr-code-generator .
+
+      # Step 4: Run the container (basic test)
+      - name: Run container and generate QR code
+        run: |
+          docker run --rm -v ${{ github.workspace }}/qr_codes:/app/qr_codes qr-code-generator
+          echo "Container run completed."
+
+      # Step 5: Verify that the QR code was created
+      - name: Verify QR code output
+        run: |
+          ls -la qr_codes
+          if [ "$(ls -A qr_codes)" ]; then
+            echo "QR code generation successful!"
+          else
+            echo "No QR code generated!"
+            exit 1
+          fi
+
+      
